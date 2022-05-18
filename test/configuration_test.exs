@@ -33,4 +33,12 @@ defmodule ConfigurationTest do
     assert updated.regex != original.regex
     assert updated.replacement != original.replacement
   end
+
+  test "word strategy" do
+    original = Configuration.new(match_strategy: :anywhere, blacklist: ["bad", "words"])
+    updated = Configuration.update(original, match_strategy: :word)
+    assert original.regex
+    assert updated.regex
+    assert updated.regex != original.regex
+  end
 end

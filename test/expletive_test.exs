@@ -30,6 +30,13 @@ defmodule ExpletiveTest do
     assert !Expletive.profane?("good words", config)
   end
 
+  test "anywhere in a string", %{config: original} do
+    config = Expletive.Configuration.update(original, match_strategy: :anywhere)
+
+    assert Expletive.profane?("somebadwords", config)
+    assert !Expletive.profane?("good words", config)
+  end
+
   test "bad words with whitespace in a string" do
     config = Expletive.configure(blacklist: ["bad word"])
     assert Expletive.profane?("a bad word in a string", config)
@@ -39,6 +46,14 @@ defmodule ExpletiveTest do
   test "find expletives in a string", %{config: config} do
     assert ["very", "bad"] == Expletive.profanities("very bad words", config)
     assert ["very", "bad", "BAD"] == Expletive.profanities("very bad words are BAD", config)
+    assert [] == Expletive.profanities("none to be found", config)
+  end
+
+  test "find expletives anywhere in a string", %{config: original} do
+    config = Expletive.Configuration.update(original, match_strategy: :anywhere)
+
+    assert ["very", "bad"] == Expletive.profanities("verybadwords", config)
+    assert ["very", "bad", "BAD"] == Expletive.profanities("verybadwordsareBAD", config)
     assert [] == Expletive.profanities("none to be found", config)
   end
 

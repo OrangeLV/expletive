@@ -4,6 +4,7 @@ defmodule Expletive.Configuration do
   defstruct whitelist: [],
             blacklist: [],
             replacement: :default,
+            match_strategy: :word,
             regex: nil
 
   def new(options) do
@@ -30,6 +31,10 @@ defmodule Expletive.Configuration do
     %{config | replacement: value}
   end
 
+  defp update_config(config, :match_strategy, value) do
+    %{config | match_strategy: value}
+  end
+
   defp compile(config) do
     %{config | regex: compile_regex(config)}
   end
@@ -41,6 +46,7 @@ defmodule Expletive.Configuration do
     config
     |> collect_words_to_match
     |> build_pattern
+    |> maybe_wrap_pattern(config.match_strategy)
     |> Regex.compile!("iu")
   end
 
@@ -55,8 +61,19 @@ defmodule Expletive.Configuration do
     words
     |> Enum.map(&Regex.escape/1)
     |> Enum.join("|")
-    |> wrap_string("\\b(?:", ")\\b")
   end
 
   def wrap_string(string, prefix, suffix), do: "#{prefix}#{string}#{suffix}"
+
+  def maybe_wrap_pattern("$." = pattern, _) do
+    pattern
+  end
+
+  def maybe_wrap_pattern(pattern, :word) do
+    wrap_string(pattern, "\\b(?:", ")\\b")
+  end
+
+  def maybe_wrap_pattern(pattern, :anywhere) do
+    wrap_string(pattern, "(?:", ")")
+  end
 end

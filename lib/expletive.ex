@@ -24,6 +24,9 @@ defmodule Expletive do
 
   * `:blacklist` - A list of words which are considered profane (if a string is given, it will be split on whitespace to create the world list)
   * `:whitelist` - A list of words which are allowed even if they're also present in the blacklist (if a string is given, it will be split on whitespace to create the world list)
+  * `:match_strategy` - A strategy indicating how the regex is going to match bad words - a whole word or a part of a long string.
+      * `:word` - Match whole word separated by whitespace (default)
+      * `:anywhere` - Match anywhere in given string
   * `:replacement` - A replacement strategy:
       * `:garbled` - Replace by a random permutation of `$@!#%` (default)
       * `:stars` - Replace all characters by `*`
